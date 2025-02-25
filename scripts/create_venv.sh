@@ -16,6 +16,11 @@ if [ ! -d $venv_dir ]; then
     python -m venv $venv_dir
 fi
 
-source $venv_dir/bin/activate
+echo $OSTYPE
 
+if [[ "$OSTYPE" == "msys"* ]]; then
+    . env/Scripts/activate
+else 
+    source env/bin/activate
+fi
 pip install -r $current_dir/requirements.txt
