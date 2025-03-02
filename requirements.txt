@@ -1,2 +1,4 @@
-setuptools
-pandas
+fastapi
+fastapi[standard]
+starlette
+uvicorn
