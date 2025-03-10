@@ -1,13 +1,34 @@
-from fastapi import APIRouter
-from fastapi.encoders import jsonable_encoder
+from http import HTTPStatus
+from typing import Optional
 
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.infrastructure.database.injection import inject_db
 from app.infrastructure.models.form import Form
 
 router = APIRouter(tags=["form"])
 
+class FormCreate(BaseModel):
+    rating: int
+    useful: bool
+    comment: Optional[str] = None
+
 @router.post("/form")
-def user_response_form(
-    form: Form
+async def user_response_form(
+    form: FormCreate,
+    db: AsyncSession = Depends(inject_db)
 ):
-    return jsonable_encoder(form)
+    if not (1 <= form.rating <= 5):
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Invalid rating")
+
+    new_form = Form(**form.model_dump())
+
+    db.add(new_form)
+    await db.commit()
+    await db.refresh(new_form)
+
+    return form
 
