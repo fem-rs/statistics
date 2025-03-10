@@ -3,9 +3,10 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 # should probably put this in a config somewhere
-DATABASE_URL = "sqlite+aiosqlite:///form.db"
 
-async_engine = create_async_engine(DATABASE_URL, echo=True)
+from app.infrastructure.config import read_config
+
+async_engine = create_async_engine(read_config()["database"][0]["url"], echo=True)
 
 AsyncSessionLocal = sessionmaker(
     bind=async_engine, class_=AsyncSession, expire_on_commit=False
