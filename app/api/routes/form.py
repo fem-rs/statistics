@@ -1,3 +1,4 @@
+from datetime import date
 from http import HTTPStatus
 from typing import Optional
 
@@ -12,9 +13,9 @@ from app.infrastructure.models.form import Form
 router = APIRouter(tags=["form"])
 
 class FormCreate(BaseModel):
-    rating: int
-    useful: bool
     comment: Optional[str] = None
+    dob: date
+    rating: int
 
 @router.post("/form")
 async def user_response_form(
@@ -30,5 +31,5 @@ async def user_response_form(
     await db.commit()
     await db.refresh(new_form)
 
-    return form
+    return HTTPStatus.OK
 
